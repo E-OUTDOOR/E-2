@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KALKULATOR E-2</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --primary-light: #334155;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --danger: #ef4444;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: #1e293b;
+            --input-bg: #0f172a;
+            --border: #334155;
+            --border-focus: #38bdf8;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--text);
+            background: var(--bg-gradient);
+            margin: 0;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 20px;
+            color: var(--text);
+            text-align: center;
+            margin: 0 0 24px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        #input-page {
+            max-width: 440px;
+            margin: 30px auto;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 32px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+        }
+
+        #input-page h3 {
+            margin: 0 0 20px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .grid-inputs-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            padding: 10px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            text-align: center;
+            width: 100%;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            background: #1e293b;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        .input-group input.input-error {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+        }
+
+        .error-banner {
+            display: none;
+            background-color: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .toast-banner {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #991b1b;
+            color: #fef2f2;
+            border: 1px solid #f87171;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+
+        .btn-enter {
+            width: 100%;
+            background-color: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-enter:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-enter:active {
+            transform: translateY(0);
+        }
+
+        #result-page {
+            display: none;
+            width: 100%;
+        }
+
+        .top-bar-result {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .btn-back {
+            background-color: #334155;
+            color: var(--text);
+            border: none;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-back:hover {
+            background-color: #475569;
+        }
+
+        .rab-header-left {
+            text-align: left;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .rab-header-left h2 {
+            font-size: 15px;
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text);
+        }
+
+        .rab-header-left p {
+            font-size: 13px;
+            margin: 0;
+            color: var(--text-muted);
+        }
+
+        .print-only-meta,
+        .print-only-val {
+            display: none;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+            background: #0f172a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            white-space: nowrap;
+            color: var(--text);
+            min-width: 800px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: var(--text);
+            text-align: center;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .group-row {
+            background-color: #334155;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .subtotal-row {
+            background-color: #1e293b;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .total-row {
+            background-color: #0f172a;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+
+        .price-input {
+            width: 100%;
+            max-width: 125px;
+            padding: 6px 10px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .vol-input {
+            width: 56px;
+            padding: 5px 4px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .price-input:focus, .vol-input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            background: #1e293b;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        button.print-btn {
+            background-color: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        button.print-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 6px; }
+            .container { padding: 12px; border-radius: 8px; }
+            h1 { font-size: 16px; margin-bottom: 16px; }
+            #input-page { margin: 10px auto; padding: 20px; }
+            table { font-size: 11px; }
+            th, td { padding: 8px 10px; }
+            .price-input { max-width: 105px; font-size: 11px; }
+            .vol-input { width: 48px; font-size: 11px; }
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm;
+            }
+
+            * {
+                transition: none !important;
+                box-shadow: none !important;
+            }
+
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 9pt !important;
+                line-height: 1.2 !important;
+                min-height: auto !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .container {
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                background: #ffffff !important;
+                border-radius: 0 !important;
+            }
+
+            #page-title,
+            #input-page,
+            .top-bar-result,
+            .action-bar,
+            .toast-banner,
+            .screen-only-input {
+                display: none !important;
+            }
+
+            #result-page {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .print-only-val {
+                display: inline !important;
+                color: #000000 !important;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .rab-header-left {
+                margin-bottom: 5px !important;
+                padding-bottom: 3px !important;
+                border-bottom: 1.5px solid #000000 !important;
+            }
+
+            .rab-header-left h2 {
+                color: #000000 !important;
+                font-size: 11pt !important;
+                font-weight: 700 !important;
+                margin: 0 0 2px 0 !important;
+                letter-spacing: 0.3px !important;
+            }
+
+            .rab-header-left p {
+                color: #000000 !important;
+                font-size: 9pt !important;
+                font-weight: 600 !important;
+                margin: 0 !important;
+            }
+
+            .print-only-meta {
+                display: block !important;
+                padding-top: 1px !important;
+                margin-bottom: 6px !important;
+                color: #000000 !important;
+                font-size: 8pt !important;
+            }
+
+            .print-meta-grid {
+                display: flex !important;
+                justify-content: flex-start !important;
+                align-items: flex-start !important;
+                gap: 36px !important;
+            }
+
+            .print-meta-col-param {
+                flex: 0 0 auto !important;
+                min-width: 210px !important;
+            }
+
+            .print-meta-col-bp {
+                flex: 1 1 auto !important;
+            }
+
+            .print-meta-title {
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                margin-bottom: 2px !important;
+                font-size: 8pt !important;
+                text-decoration: underline !important;
+                color: #000000 !important;
+            }
+
+            .print-param-table {
+                width: auto !important;
+                min-width: 0 !important;
+                table-layout: auto !important;
+                border-collapse: collapse !important;
+                font-size: 8pt !important;
+            }
+
+            .print-param-table td {
+                border: none !important;
+                padding: 1px 0 !important;
+                color: #000000 !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+            }
+
+            .print-param-label {
+                width: 104px !important;
+                padding-right: 4px !important;
+            }
+
+            .print-param-colon {
+                width: 10px !important;
+                text-align: center !important;
+            }
+
+            .print-param-value {
+                padding-left: 2px !important;
+                font-weight: 600 !important;
+            }
+
+            .print-bp-list {
+                margin: 0 !important;
+                padding-left: 14px !important;
+                line-height: 1.3 !important;
+            }
+
+            .print-bp-list li {
+                margin-bottom: 1px !important;
+                color: #000000 !important;
+            }
+
+            .table-responsive {
+                overflow: visible !important;
+                border: none !important;
+                border-radius: 0 !important;
+                margin-bottom: 8px !important;
+                background: #ffffff !important;
+            }
+
+            table.rab-main-table {
+                width: 100% !important;
+                min-width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+                font-size: 7.8pt !important;
+                color: #000000 !important;
+                white-space: normal !important;
+                font-variant-numeric: tabular-nums;
+            }
+
+            table.rab-main-table col.col-no     { width: 4.5% !important; }
+            table.rab-main-table col.col-uraian { width: 32.5% !important; }
+            table.rab-main-table col.col-vol1   { width: 5.5% !important; }
+            table.rab-main-table col.col-sat1   { width: 6.5% !important; }
+            table.rab-main-table col.col-vol2   { width: 5.5% !important; }
+            table.rab-main-table col.col-sat2   { width: 7.0% !important; }
+            table.rab-main-table col.col-total  { width: 6.0% !important; }
+            table.rab-main-table col.col-satuan { width: 7.5% !important; }
+            table.rab-main-table col.col-harga  { width: 11.5% !important; }
+            table.rab-main-table col.col-jumlah { width: 13.5% !important; }
+
+            table.rab-main-table th,
+            table.rab-main-table td {
+                border: 1px solid #475569 !important;
+                padding: 2px 3.5px !important;
+                line-height: 1.15 !important;
+                vertical-align: middle !important;
+                overflow-wrap: break-word !important;
+            }
+
+            table.rab-main-table th {
+                background-color: #1e3a5f !important;
+                color: #ffffff !important;
+                font-size: 7.5pt !important;
+                font-weight: 700 !important;
+                text-align: center !important;
+                padding: 3px 2px !important;
+                position: static !important;
+            }
+
+            table.rab-main-table td.col-center {
+                text-align: center !important;
+            }
+
+            table.rab-main-table td.col-uraian-cell {
+                text-align: left !important;
+                padding-left: 5px !important;
+            }
+
+            table.rab-main-table td.col-harga-cell,
+            table.rab-main-table td.col-jumlah-cell {
+                text-align: right !important;
+                padding-right: 5px !important;
+                white-space: nowrap !important;
+            }
+
+            .group-row {
+                background-color: #e2e8f0 !important;
+                color: #000000 !important;
+                font-weight: 700 !important;
+            }
+
+            .group-row td {
+                padding-top: 2.5px !important;
+                padding-bottom: 2.5px !important;
+            }
+
+            .subtotal-row {
+                background-color: #f1f5f9 !important;
+                color: #000000 !important;
+                font-weight: 700 !important;
+            }
+
+            .subtotal-row td.subtotal-label {
+                text-align: right !important;
+                padding-right: 6px !important;
+            }
+
+            .total-row {
+                background-color: #cbd5e1 !important;
+                color: #000000 !important;
+                font-weight: 700 !important;
+                font-size: 8.2pt !important;
+            }
+
+            .total-row td {
+                border-top: 1.5px solid #000000 !important;
+                border-bottom: 1.5px solid #000000 !important;
+                padding: 3px 5px !important;
+            }
+
+            .total-row td.total-label {
+                text-align: right !important;
+                padding-right: 6px !important;
+            }
+
+            /* --- REKAPITULASI TRIWULAN (VOL = 1, SATUAN = TW) --- */
+            .print-triwulan-box {
+                display: block !important;
+                margin-top: 10px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .print-triwulan-title {
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                font-size: 8.5pt !important;
+                text-decoration: underline !important;
+                margin-bottom: 4px !important;
+                color: #000000 !important;
+                letter-spacing: 0.3px !important;
+            }
+
+            table.print-triwulan-table {
+                width: 100% !important;
+                min-width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+                font-size: 8pt !important;
+                color: #000000 !important;
+                font-variant-numeric: tabular-nums;
+            }
+
+            table.print-triwulan-table th,
+            table.print-triwulan-table td {
+                border: 1px solid #475569 !important;
+                padding: 3.5px 5px !important;
+                line-height: 1.2 !important;
+                vertical-align: middle !important;
+            }
+
+            table.print-triwulan-table th {
+                background-color: #1e3a5f !important;
+                color: #ffffff !important;
+                font-size: 7.8pt !important;
+                font-weight: 700 !important;
+                text-align: center !important;
+                position: static !important;
+                letter-spacing: 0.2px !important;
+            }
+
+            table.print-triwulan-table td.text-center {
+                text-align: center !important;
+            }
+
+            table.print-triwulan-table td.text-right {
+                text-align: right !important;
+                padding-right: 5px !important;
+                white-space: nowrap !important;
+            }
+
+            table.print-triwulan-table tr.tw-total-row {
+                background-color: #cbd5e1 !important;
+                font-weight: 700 !important;
+                font-size: 8.4pt !important;
+            }
+
+            table.print-triwulan-table tr.tw-total-row td {
+                border-top: 1.5px solid #000000 !important;
+                border-bottom: 1.5px solid #000000 !important;
+                padding: 4px 5px !important;
+            }
+
+            tr {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast-msg" class="toast-banner"></div>
+
+<div class="container">
+    <h1 id="page-title">KALKULATOR E-2</h1>
+
+    <div id="input-page">
+        <h3>Parameter</h3>
+        <div id="error-msg" class="error-banner">Semua parameter wajib diisi (minimal bernilai 1)!</div>
+
+        <div class="grid-inputs-vertical">
+            <div class="input-group">
+                <label>Jumlah Anggota</label>
+                <input type="number" id="p_anggota" value="" min="1" placeholder="" oninput="cekStatusInput()" onkeydown="cekTombolEnter(event)">
+            </div>
+            <div class="input-group">
+                <label>Jumlah Objek</label>
+                <input type="number" id="p_lokasi" value="" min="1" placeholder="" oninput="cekStatusInput()" onkeydown="cekTombolEnter(event)">
+            </div>
+            <div class="input-group">
+                <label>Durasi(Hari)</label>
+                <input type="number" id="p_hari" value="" min="1" placeholder="" oninput="cekStatusInput()" onkeydown="cekTombolEnter(event)">
+            </div>
+        </div>
+        
+        <button id="btn-submit" class="btn-enter" onclick="prosesKeHalamanHasil()">ENTER</button>
+    </div>
+
+    <div id="result-page">
+        <div class="top-bar-result">
+            <button class="btn-back" onclick="kembaliKeInput()">← Kembali</button>
+        </div>
+
+        <div class="rab-header-left">
+            <h2>RENCANA ANGGARAN BIAYA (RAB)</h2>
+            <p>Kegiatan : Pengawasan</p>
+        </div>
+
+        <div class="print-only-meta">
+            <div class="print-meta-grid">
+                <div class="print-meta-col-param">
+                    <div class="print-meta-title">Parameter</div>
+                    <table class="print-param-table">
+                        <tr>
+                            <td class="print-param-label">Penanggung Jawab</td>
+                            <td class="print-param-colon">:</td>
+                            <td class="print-param-value">1 Orang</td>
+                        </tr>
+                        <tr>
+                            <td class="print-param-label">Ketua Tim</td>
+                            <td class="print-param-colon">:</td>
+                            <td class="print-param-value">1 Orang</td>
+                        </tr>
+                        <tr>
+                            <td class="print-param-label">Anggota Tim</td>
+                            <td class="print-param-colon">:</td>
+                            <td class="print-param-value"><span id="cetak_anggota">0</span> Orang</td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td class="print-param-label">Total Personel Tim</td>
+                            <td class="print-param-colon">:</td>
+                            <td class="print-param-value"><span id="cetak_total_tim">0</span> Orang</td>
+                        </tr>
+                        <tr>
+                            <td class="print-param-label">Objek / Lokasi</td>
+                            <td class="print-param-colon">:</td>
+                            <td class="print-param-value"><span id="cetak_lokasi">0</span> Lokasi</td>
+                        </tr>
+                        <tr>
+                            <td class="print-param-label">Durasi Pelaksanaan</td>
+                            <td class="print-param-colon">:</td>
+                            <td class="print-param-value"><span id="cetak_hari">0</span> Hari (menyesuaikan lapangan)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="print-meta-col-bp">
+                    <div class="print-meta-title">Proses Bisnis</div>
+                    <ul class="print-bp-list">
+                        <li>Rapat Pembentukan Tim</li>
+                        <li>Pelaksanaan Pengawasan</li>
+                        <li>Rapat Evaluasi Hasil</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="rab-main-table">
+                <colgroup>
+                    <col class="col-no">
+                    <col class="col-uraian">
+                    <col class="col-vol1">
+                    <col class="col-sat1">
+                    <col class="col-vol2">
+                    <col class="col-sat2">
+                    <col class="col-total">
+                    <col class="col-satuan">
+                    <col class="col-harga">
+                    <col class="col-jumlah">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Uraian</th>
+                        <th>Vol 1</th>
+                        <th>Sat 1</th>
+                        <th>Vol 2</th>
+                        <th>Sat 2</th>
+                        <th>Total</th>
+                        <th>Satuan</th>
+                        <th>Harga</th>
+                        <th>Jumlah (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody id="rka-body"></tbody>
+            </table>
+        </div>
+
+        <div class="print-only-meta print-triwulan-box">
+            <div class="print-triwulan-title">Rekapitulasi RAB PER PRIODE</div>
+            <table class="print-triwulan-table">
+                <colgroup>
+                    <col style="width: 5%;">
+                    <col style="width: 28%;">
+                    <col style="width: 11%;">
+                    <col style="width: 12%;">
+                    <col style="width: 20%;">
+                    <col style="width: 24%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Periode</th>
+                        <th>Vol</th>
+                        <th>Satuan</th>
+                        <th>Harga (Rp)</th>
+                        <th>Jumlah (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">1</td>
+                        <td>Triwulan I</td>
+                        <td class="text-center">1</td>
+                        <td class="text-center">TW</td>
+                        <td class="text-right">Rp <span id="cetak_tw1_harga">0</span></td>
+                        <td class="text-right">Rp <span id="cetak_tw1">0</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">2</td>
+                        <td>Triwulan II</td>
+                        <td class="text-center">1</td>
+                        <td class="text-center">TW</td>
+                        <td class="text-right">Rp <span id="cetak_tw2_harga">0</span></td>
+                        <td class="text-right">Rp <span id="cetak_tw2">0</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">3</td>
+                        <td>Triwulan III</td>
+                        <td class="text-center">1</td>
+                        <td class="text-center">TW</td>
+                        <td class="text-right">Rp <span id="cetak_tw3_harga">0</span></td>
+                        <td class="text-right">Rp <span id="cetak_tw3">0</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">4</td>
+                        <td>Triwulan IV</td>
+                        <td class="text-center">1</td>
+                        <td class="text-center">TW</td>
+                        <td class="text-right">Rp <span id="cetak_tw4_harga">0</span></td>
+                        <td class="text-right">Rp <span id="cetak_tw4">0</span></td>
+                    </tr>
+                    <tr class="tw-total-row">
+                        <td colspan="5" class="text-right" style="padding-right: 8px;">TOTAL REKAPITULASI RAB</td>
+                        <td class="text-right">Rp <span id="cetak_total_4tw">0</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="action-bar">
+            <button class="print-btn" onclick="cetakDokumen()">Cetak</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const tarif = {
+    pj_honor: 2500000,
+    ketua_honor: 2000000,
+    anggota_honor: 1700000,
+    trans_lokasi: 2000000,
+    harian_fb: 160000,
+    penginapan: 900000,
+    makan_lapangan: 150000,
+    paket_trans: 5300000,
+    paket_harian_fb: 160000,
+    paket_hotel_fb: 900000,
+    lain_persen: 5
+};
+
+const volManual = {
+    trans_lokasi_vol1: 0,
+    trans_kali: 1,
+    harian_hari: 1,
+    penginapan_malam: 1,
+    makan_hari: 3, 
+    paket_trans_vol1: 0,
+    paket_trans_kali: 1,
+    paket_harian_hari: 1,
+    paket_hotel_malam: 1
+};
+
+let toastTimer = null;
+function tampilkanPesan(teks) {
+    const toast = document.getElementById('toast-msg');
+    toast.textContent = teks;
+    toast.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID').format(Math.round(angka));
+}
+
+function ubahVol(key, val) {
+    let nilai = parseFloat(val);
+    if (isNaN(nilai) || nilai < 0) {
+        nilai = 0;
+    }
+    volManual[key] = nilai;
+    hitungRKA();
+}
+
+function ubahTarif(key, val) {
+    let nilai = parseFloat(val) || 0;
+    if (key === 'lain_persen') {
+        if (nilai > 25) {
+            tampilkanPesan('Nilai maksimal belanja lain-lain adalah 25%');
+            nilai = 25;
+            const inputPersen = document.getElementById('input_lain_persen');
+            if (inputPersen) inputPersen.value = 25;
+        } else if (nilai < 0) {
+            nilai = 0;
+        }
+    }
+    tarif[key] = nilai;
+    hitungRKA(); 
+}
+
+function cekStatusInput() {
+    const daftarId = ['p_anggota', 'p_lokasi', 'p_hari'];
+    let semuaValid = true;
+
+    daftarId.forEach(id => {
+        const el = document.getElementById(id);
+        const nilai = parseInt(el.value);
+        if (el.value.trim() === "" || isNaN(nilai) || nilai <= 0) {
+            semuaValid = false;
+        } else {
+            el.classList.remove('input-error');
+        }
+    });
+
+    if (semuaValid) {
+        document.getElementById('error-msg').style.display = 'none';
+    }
+    return semuaValid;
+}
+
+function cekTombolEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        prosesKeHalamanHasil();
+    }
+}
+
+function prosesKeHalamanHasil() {
+    const daftarId = ['p_anggota', 'p_lokasi', 'p_hari'];
+    let inputKosongPertama = null;
+
+    daftarId.forEach(id => {
+        const el = document.getElementById(id);
+        const nilai = parseInt(el.value);
+        if (el.value.trim() === "" || isNaN(nilai) || nilai <= 0) {
+            el.classList.add('input-error');
+            if (!inputKosongPertama) {
+                inputKosongPertama = el;
+            }
+        } else {
+            el.classList.remove('input-error');
+        }
+    });
+
+    if (inputKosongPertama) {
+        document.getElementById('error-msg').style.display = 'block';
+        inputKosongPertama.focus();
+        return;
+    }
+
+    const anggota = parseInt(document.getElementById('p_anggota').value) || 0;
+    const lokasi = parseInt(document.getElementById('p_lokasi').value) || 0;
+    const hari = parseInt(document.getElementById('p_hari').value) || 0;
+    const totalTim = 1 + 1 + anggota;
+
+    volManual.trans_lokasi_vol1 = lokasi;
+    volManual.paket_trans_vol1 = totalTim;
+
+    document.getElementById('cetak_anggota').textContent = anggota;
+    document.getElementById('cetak_total_tim').textContent = totalTim;
+    document.getElementById('cetak_lokasi').textContent = lokasi;
+    document.getElementById('cetak_hari').textContent = hari;
+
+    document.getElementById('page-title').style.display = 'none';
+    document.getElementById('input-page').style.display = 'none';
+    document.getElementById('result-page').style.display = 'block';
+    hitungRKA();
+}
+
+function kembaliKeInput() {
+    document.getElementById('result-page').style.display = 'none';
+    document.getElementById('page-title').style.display = 'block';
+    document.getElementById('input-page').style.display = 'block';
+}
+
+function sinkronkanDataCetak() {
+    document.querySelectorAll('.screen-only-input').forEach(input => {
+        const span = input.nextElementSibling;
+        if (span && span.classList.contains('print-only-val')) {
+            if (input.id && input.id.startsWith('input_lain_persen')) {
+                span.textContent = input.value + '%';
+            } else if (input.classList.contains('price-input')) {
+                span.textContent = formatRupiah(parseFloat(input.value) || 0);
+            } else {
+                span.textContent = input.value;
+            }
+        }
+    });
+}
+
+function cetakDokumen() {
+    sinkronkanDataCetak();
+    try {
+        window.print();
+    } catch (e) {
+        tampilkanPesan('Gagal membuka dialog cetak langsung.');
+    }
+}
+
+window.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        if (document.getElementById('result-page').style.display === 'block') {
+            e.preventDefault();
+            cetakDokumen();
+        }
+    }
+});
+
+function renderSelHarga(key, nilai) {
+    return `<td class="text-center col-harga-cell">` +
+           `<input type="number" class="price-input screen-only-input" value="${nilai}" oninput="ubahTarif('${key}', this.value)">` +
+           `<span class="print-only-val">${formatRupiah(nilai)}</span>` +
+           `</td>`;
+}
+
+function renderSelVol(key, nilai) {
+    return `<td class="text-center col-center">` +
+           `<input type="number" class="vol-input screen-only-input" min="0" value="${nilai}" oninput="ubahVol('${key}', this.value)">` +
+           `<span class="print-only-val">${nilai}</span>` +
+           `</td>`;
+}
+
+function hitungRKA() {
+    const anggota = parseInt(document.getElementById('p_anggota').value) || 0;
+    const lokasi = parseInt(document.getElementById('p_lokasi').value) || 0;
+    const hari = parseInt(document.getElementById('p_hari').value) || 0;
+    
+    const pj = 1;
+    const ketua = 1;
+    const totalTim = pj + ketua + anggota;
+
+    const c_pj_honor = pj * tarif.pj_honor;
+    const c_ketua_honor = ketua * tarif.ketua_honor;
+    const c_anggota_honor = anggota * tarif.anggota_honor;
+    const totalBelanjaHonor = c_pj_honor + c_ketua_honor + c_anggota_honor;
+
+    const tot_trans = volManual.trans_lokasi_vol1 * volManual.trans_kali;
+    const tot_harian = totalTim * volManual.harian_hari;
+    const tot_penginapan = totalTim * volManual.penginapan_malam;
+    const tot_makan = totalTim * volManual.makan_hari;
+
+    const c_trans = tot_trans * tarif.trans_lokasi;
+    const c_harian = tot_harian * tarif.harian_fb;
+    const c_penginapan = tot_penginapan * tarif.penginapan;
+    const c_makan = tot_makan * tarif.makan_lapangan;
+    const totalBelanjaPD = c_trans + c_harian + c_penginapan + c_makan;
+
+    const tot_paket_trans = volManual.paket_trans_vol1 * volManual.paket_trans_kali;
+    const tot_paket_harian = totalTim * volManual.paket_harian_hari;
+    const tot_paket_hotel = totalTim * volManual.paket_hotel_malam;
+
+    const c_paket_trans = tot_paket_trans * tarif.paket_trans;
+    const c_paket_harian = tot_paket_harian * tarif.paket_harian_fb;
+    const c_paket_hotel = tot_paket_hotel * tarif.paket_hotel_fb;
+    const totalBelanjaPaket = c_paket_trans + c_paket_harian + c_paket_hotel;
+
+    const subTotalPokok = totalBelanjaHonor + totalBelanjaPD + totalBelanjaPaket;
+    
+    let persenAktif = tarif.lain_persen > 25 ? 25 : tarif.lain_persen;
+    const c_lain = subTotalPokok * (persenAktif / 100);
+    const grandTotal = subTotalPokok + c_lain;
+
+    const html = `
+        <tr class="group-row">
+            <td class="text-center col-center">1</td>
+            <td colspan="9" class="col-uraian-cell">HONORARIUM TIM</td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">1.1</td>
+            <td class="col-uraian-cell">Honorarium Penanggung Jawab</td>
+            <td class="text-center col-center">${pj}</td><td class="text-center col-center">Org</td>
+            <td class="text-center col-center">1</td><td class="text-center col-center">Keg</td>
+            <td class="text-center col-center">${pj}</td><td class="text-center col-center">OK</td>
+            ${renderSelHarga('pj_honor', tarif.pj_honor)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_pj_honor)}</b></td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">1.2</td>
+            <td class="col-uraian-cell">Honorarium Ketua Tim</td>
+            <td class="text-center col-center">${ketua}</td><td class="text-center col-center">Org</td>
+            <td class="text-center col-center">1</td><td class="text-center col-center">Keg</td>
+            <td class="text-center col-center">${ketua}</td><td class="text-center col-center">OK</td>
+            ${renderSelHarga('ketua_honor', tarif.ketua_honor)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_ketua_honor)}</b></td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">1.3</td>
+            <td class="col-uraian-cell">Honorarium Anggota Tim</td>
+            <td class="text-center col-center">${anggota}</td><td class="text-center col-center">Org</td>
+            <td class="text-center col-center">1</td><td class="text-center col-center">Keg</td>
+            <td class="text-center col-center">${anggota}</td><td class="text-center col-center">OK</td>
+            ${renderSelHarga('anggota_honor', tarif.anggota_honor)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_anggota_honor)}</b></td>
+        </tr>
+        <tr class="subtotal-row">
+            <td colspan="9" class="text-right subtotal-label">SUB TOTAL 1</td>
+            <td class="text-right col-jumlah-cell">Rp ${formatRupiah(totalBelanjaHonor)}</td>
+        </tr>
+
+        <tr class="group-row">
+            <td class="text-center col-center">2</td>
+            <td colspan="9" class="col-uraian-cell">BELANJA PENGAWASAN</td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">2.1</td>
+            <td class="col-uraian-cell">Transportasi</td>
+            ${renderSelVol('trans_lokasi_vol1', volManual.trans_lokasi_vol1)}<td class="text-center col-center">Lokasi</td>
+            ${renderSelVol('trans_kali', volManual.trans_kali)}<td class="text-center col-center">Kali</td>
+            <td class="text-center col-center">${tot_trans}</td><td class="text-center col-center">PP</td>
+            ${renderSelHarga('trans_lokasi', tarif.trans_lokasi)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_trans)}</b></td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">2.2</td>
+            <td class="col-uraian-cell">Uang Harian Fullboard</td>
+            <td class="text-center col-center">${totalTim}</td><td class="text-center col-center">Org</td>
+            ${renderSelVol('harian_hari', volManual.harian_hari)}<td class="text-center col-center">Hari</td>
+            <td class="text-center col-center">${tot_harian}</td><td class="text-center col-center">OH</td>
+            ${renderSelHarga('harian_fb', tarif.harian_fb)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_harian)}</b></td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">2.3</td>
+            <td class="col-uraian-cell">Uang Penginapan</td>
+            <td class="text-center col-center">${totalTim}</td><td class="text-center col-center">Org</td>
+            ${renderSelVol('penginapan_malam', volManual.penginapan_malam)}<td class="text-center col-center">Malam</td>
+            <td class="text-center col-center">${tot_penginapan}</td><td class="text-center col-center">OP</td>
+            ${renderSelHarga('penginapan', tarif.penginapan)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_penginapan)}</b></td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">2.4</td>
+            <td class="col-uraian-cell">Belanja makan minum lapangan</td>
+            <td class="text-center col-center">${totalTim}</td><td class="text-center col-center">Org</td>
+            ${renderSelVol('makan_hari', volManual.makan_hari)}<td class="text-center col-center">Hari</td>
+            <td class="text-center col-center">${tot_makan}</td><td class="text-center col-center">OH</td>
+            ${renderSelHarga('makan_lapangan', tarif.makan_lapangan)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_makan)}</b></td>
+        </tr>
+        <tr class="subtotal-row">
+            <td colspan="9" class="text-right subtotal-label">SUB TOTAL 2</td>
+            <td class="text-right col-jumlah-cell">Rp ${formatRupiah(totalBelanjaPD)}</td>
+        </tr>
+
+        <tr class="group-row">
+            <td class="text-center col-center">3</td>
+            <td colspan="9" class="col-uraian-cell">BELANJA PAKET EVALUASI KEGIATAN</td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">3.1</td>
+            <td class="col-uraian-cell">Transportasi</td>
+            ${renderSelVol('paket_trans_vol1', volManual.paket_trans_vol1)}<td class="text-center col-center">Org</td>
+            ${renderSelVol('paket_trans_kali', volManual.paket_trans_kali)}<td class="text-center col-center">Kali</td>
+            <td class="text-center col-center">${tot_paket_trans}</td><td class="text-center col-center">PP</td>
+            ${renderSelHarga('paket_trans', tarif.paket_trans)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_paket_trans)}</b></td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">3.2</td>
+            <td class="col-uraian-cell">Uang Harian Fullboard</td>
+            <td class="text-center col-center">${totalTim}</td><td class="text-center col-center">Org</td>
+            ${renderSelVol('paket_harian_hari', volManual.paket_harian_hari)}<td class="text-center col-center">Hari</td>
+            <td class="text-center col-center">${tot_paket_harian}</td><td class="text-center col-center">OH</td>
+            ${renderSelHarga('paket_harian_fb', tarif.paket_harian_fb)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_paket_harian)}</b></td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">3.3</td>
+            <td class="col-uraian-cell">Paket Rapat Fullboard</td>
+            <td class="text-center col-center">${totalTim}</td><td class="text-center col-center">Org</td>
+            ${renderSelVol('paket_hotel_malam', volManual.paket_hotel_malam)}<td class="text-center col-center">Malam</td>
+            <td class="text-center col-center">${tot_paket_hotel}</td><td class="text-center col-center">OP</td>
+            ${renderSelHarga('paket_hotel_fb', tarif.paket_hotel_fb)}
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_paket_hotel)}</b></td>
+        </tr>
+        <tr class="subtotal-row">
+            <td colspan="9" class="text-right subtotal-label">SUB TOTAL 3</td>
+            <td class="text-right col-jumlah-cell">Rp ${formatRupiah(totalBelanjaPaket)}</td>
+        </tr>
+
+        <tr class="group-row">
+            <td class="text-center col-center">4</td>
+            <td colspan="9" class="col-uraian-cell">BELANJA LAIN-LAIN</td>
+        </tr>
+        <tr>
+            <td class="text-center col-center">4.1</td>
+            <td class="col-uraian-cell">Belanja lain-lain</td>
+            <td class="text-center col-center">1</td><td class="text-center col-center">Ls</td>
+            <td class="text-center col-center">-</td><td class="text-center col-center">-</td>
+            <td class="text-center col-center">1</td><td class="text-center col-center">Paket</td>
+            <td class="text-center col-harga-cell">
+                <input type="number" id="input_lain_persen" class="price-input screen-only-input" value="${persenAktif}" min="0" max="25" oninput="ubahTarif('lain_persen', this.value)" style="width: 70px; display: inline-block;">
+                <span class="print-only-val">${persenAktif}%</span>
+            </td>
+            <td class="text-right col-jumlah-cell"><b>Rp ${formatRupiah(c_lain)}</b></td>
+        </tr>
+
+        <tr class="total-row">
+            <td colspan="9" class="text-right total-label">TOTAL RAB</td>
+            <td class="text-right col-jumlah-cell" style="font-size: 14px;">Rp ${formatRupiah(grandTotal)}</td>
+        </tr>
+    `;
+
+    document.getElementById('rka-body').innerHTML = html;
+
+    const totalFormat = formatRupiah(grandTotal);
+    const total4TwFormat = formatRupiah(grandTotal * 4);
+    document.getElementById('cetak_tw1_harga').textContent = totalFormat;
+    document.getElementById('cetak_tw2_harga').textContent = totalFormat;
+    document.getElementById('cetak_tw3_harga').textContent = totalFormat;
+    document.getElementById('cetak_tw4_harga').textContent = totalFormat;
+    document.getElementById('cetak_tw1').textContent = totalFormat;
+    document.getElementById('cetak_tw2').textContent = totalFormat;
+    document.getElementById('cetak_tw3').textContent = totalFormat;
+    document.getElementById('cetak_tw4').textContent = totalFormat;
+    document.getElementById('cetak_total_4tw').textContent = total4TwFormat;
+}
+</script>
+
+</body>
+</html>
